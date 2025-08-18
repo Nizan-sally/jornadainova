@@ -137,9 +137,9 @@ if 'df_artigos' in st.session_state:
         with st.expander("Detalhes dos Artigos", expanded=True):
             if not df_artigos.empty:
                 gb = GridOptionsBuilder.from_dataframe(df_artigos)
-                gb.configure_pagination(paginationAutoPageSize=True)
+                gb.configure_pagination(paginationPageSize=15)
                 gb.configure_default_column(sortable=True, filter=True, resizable=True, wrapText=True, autoHeight=True)
-                AgGrid(df_artigos, gridOptions=gb.build(), height=400, fit_columns_on_grid_load=True)
+                AgGrid(df_artigos, gridOptions=gb.build(), height=600, fit_columns_on_grid_load=True)
             else:
                 st.warning("Nenhum artigo encontrado.")
 
