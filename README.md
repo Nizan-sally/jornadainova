@@ -62,7 +62,7 @@ Setup & Installation
 Clone the repo and install dependencies:
 
 ```git
-git clone https://github.com/eduardo-corazin/jornada-inovacao-saude.git
+git clone https://github.com/Nizan-sally/jornadainova.git
 cd jornada-inovacao-saude
 pip install -r requirements.txt
 ````
