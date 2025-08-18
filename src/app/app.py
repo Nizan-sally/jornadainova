@@ -11,11 +11,6 @@ from data.data_fetcher import buscar_artigos, buscar_patentes
 from data.database import salvar_interacao
 
 # Configuração inicial
-st.set_option("theme.primaryColor", "#1abc9c")
-st.set_option("theme.backgroundColor", "#0e1117")
-st.set_option("theme.secondaryBackgroundColor", "#262730")
-st.set_option("theme.textColor", "#fafafa")
-st.set_option("theme.font", "sans serif")
 st.set_page_config(page_title="Jornada de Inovação em Saúde", layout="wide")
 st.markdown("""
 <style>
