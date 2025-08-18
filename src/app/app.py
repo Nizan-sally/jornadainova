@@ -1,29 +1,36 @@
 # app.py
-
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from pathlib import Path
+import sys
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 from wordcloud import WordCloud
 from st_aggrid import AgGrid, GridOptionsBuilder
-from data.data_fetcher import buscar_artigos, buscar_patentes
-from data.database import salvar_interacao
+
+# Caminhos portáveis
+BASE_DIR = Path(__file__).parent
+sys.path.append(str(BASE_DIR / "data"))
+
+from data_fetcher import buscar_artigos, buscar_patentes
+from database import salvar_interacao
 
 # Configuração inicial
 st.set_page_config(page_title="Jornada de Inovação em Saúde", layout="wide")
+
+# CSS tema escuro
 st.markdown("""
 <style>
-h1 {color: #1f77b4; font-family: 'Segoe UI', sans-serif;}
-h2 {color: #4e89ae;}
-.metric-label {font-size: 18px; font-weight: 600;}
-.stButton>button {background-color: #1f77b4; color:white; border-radius:5px;}
-.expanderHeader {background-color: #e6f0fa; border-radius:5px;}
+[data-testid="stAppViewContainer"] {background-color: #121212; color: #E0E0E0;}
+[data-testid="stSidebar"] {background-color: #1E1E1E; color: #E0E0E0;}
+h1,h2,h3,h4,h5,h6 {color:#1E90FF;}
+.stButton>button {background-color:#1E90FF;color:white;border-radius:5px;}
+.stExpander {background-color:#222222;color:#FFFFFF;border-radius:5px;}
 </style>
 """, unsafe_allow_html=True)
 
+# Cabeçalho
 st.markdown("<h1 style='text-align: center;'>Jornada Interativa de Inovação</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #555;'>Explore oportunidades de inovação em saúde de forma rápida e visual.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #AAAAAA;'>Explore oportunidades de inovação em saúde de forma rápida e visual.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # Barra lateral
@@ -83,10 +90,10 @@ if 'df_artigos' in st.session_state:
             dados = pd.DataFrame({"Categoria":["Artigos","Patentes"],"Quantidade":[len(df_artigos),len(df_patentes)]})
             if tipo_grafico == "Barras Verticais":
                 fig = px.bar(dados, x="Categoria", y="Quantidade", color="Categoria", text="Quantidade",
-                             color_discrete_sequence=["#4e89ae","#c56183"])
+                             color_discrete_sequence=["#1E90FF","#FF6F61"])
             else:
                 fig = px.bar(dados, y="Categoria", x="Quantidade", orientation="h", color="Categoria", text="Quantidade",
-                             color_discrete_sequence=["#4e89ae","#c56183"])
+                             color_discrete_sequence=["#1E90FF","#FF6F61"])
             fig.update_traces(textposition="auto")
             st.plotly_chart(fig, use_container_width=True)
 
@@ -94,7 +101,7 @@ if 'df_artigos' in st.session_state:
             st.markdown("Palavras-chave mais frequentes")
             if not df_artigos.empty:
                 texto_artigos = " ".join(df_artigos['Título'].tolist())
-                wordcloud = WordCloud(width=400, height=300, background_color='#f9f9f9', colormap='Blues').generate(texto_artigos)
+                wordcloud = WordCloud(width=400, height=300, background_color='#121212', colormap='Blues').generate(texto_artigos)
                 st.image(wordcloud.to_array())
             else:
                 st.warning("Nenhum artigo para gerar a nuvem de palavras.")
@@ -118,27 +125,9 @@ if 'df_artigos' in st.session_state:
             fig_gaps.update_yaxes(visible=False, showticklabels=False)
             st.plotly_chart(fig_gaps, use_container_width=True)
 
-            # Heatmap
-            if not df_artigos.empty:
-                termo_artigos = pd.Series(" ".join(df_artigos['Título']).lower().split())
-                termo_patentes = pd.Series(" ".join(df_patentes['Título']).lower().split()) if not df_patentes.empty else pd.Series([])
-                termos_unicos = termo_artigos.unique().tolist()
-                termos_comuns = termos_unicos[:15]  # limitar
-                dados_heatmap = pd.DataFrame({
-                    "Termo": termos_comuns,
-                    "Artigos": [sum(termo_artigos == t) for t in termos_comuns],
-                    "Patentes": [sum(termo_patentes == t) for t in termos_comuns] if not termo_patentes.empty else [0]*len(termos_comuns)
-                })
-                fig_heat = px.imshow(dados_heatmap.set_index("Termo").T,
-                                     color_continuous_scale="Blues",
-                                     title="Heatmap Artigos x Patentes")
-                st.plotly_chart(fig_heat, use_container_width=True)
-
-            st.markdown("### Recomendações Estratégicas")
-            for rec in recomendacoes:
-                st.markdown(f"- {rec}")
-        else:
-            st.info("Nenhum gap relevante identificado.")
+        st.markdown("### Recomendações Estratégicas")
+        for rec in recomendacoes:
+            st.markdown(f"- {rec}")
 
     # Detalhes
     with tabs[1]:
@@ -168,20 +157,14 @@ Foco: {foco}
 Período: {data_inicio} - {data_fim}
 Artigos encontrados: {len(df_artigos)}
 Patentes encontradas: {len(df_patentes)}
-Análise de Oportunidade: {"Alta oportunidade" if len(df_artigos) > 5 and len(df_patentes) < 5 else "Mercado competitivo" if len(df_patentes) > 5 else "Poucos dados"}
-
 Gaps de Mercado:
 {", ".join(gaps) if gaps else "Nenhum gap identificado"}
-
 Recomendações:
 {"; ".join(recomendacoes)}
-
 Gerado em: {pd.Timestamp.now().strftime('%d/%m/%Y %H:%M')}
 """
         st.download_button("Baixar relatório (TXT)", data=relatorio, file_name=f"relatorio_{tema}.txt")
-        st.markdown("Relatório inclui análise de gaps de mercado e recomendações estratégicas.")
 
     # Reset 
     if st.button("Nova Jornada"):
         st.session_state.clear()
-
