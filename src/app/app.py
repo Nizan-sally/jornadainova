@@ -14,7 +14,6 @@ from data.database import salvar_interacao
 st.set_page_config(page_title="Jornada de Inovação em Saúde", layout="wide")
 st.markdown("""
 <style>
-.main {background-color: #f9f9f9;}
 h1 {color: #1f77b4; font-family: 'Segoe UI', sans-serif;}
 h2 {color: #4e89ae;}
 .metric-label {font-size: 18px; font-weight: 600;}
