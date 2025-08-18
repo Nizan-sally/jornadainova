@@ -11,6 +11,7 @@ from data.data_fetcher import buscar_artigos, buscar_patentes
 from data.database import salvar_interacao
 
 # Configuração inicial
+st.write(st.get_option("theme"))
 st.set_page_config(page_title="Jornada de Inovação em Saúde", layout="wide")
 st.markdown("""
 <style>
