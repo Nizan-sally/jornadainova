@@ -63,7 +63,7 @@ Clone the repo and install dependencies:
 
 ```git
 git clone https://github.com/Nizan-sally/jornadainova.git
-cd jornada-inovacao-saude
+cd jornada-saude
 pip install -r requirements.txt
 ````
 Create a .env file (never commit this) with:
