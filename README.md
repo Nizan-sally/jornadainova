@@ -80,7 +80,7 @@ USER_AGENT=healthcare-innovation
 Run locally:
 
 ```vs
-streamlit run src/app/app.py
+streamlit run app.py
 ````
 # Deployment
 
