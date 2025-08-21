@@ -86,7 +86,7 @@ def buscar_patentes(tema, df_artigos, max_itens=5, data_inicio=None, data_fim=No
     if ano_inicio <= 1950 or ano_fim <= 1950:
         return pd.DataFrame(columns=["Título","Número","Data","Inventor"]), [], []
 
-    # Extração de termos (igual estava antes)
+    # Extração de termos 
     termos = []
     try:
         for titulo in df_artigos["Título"]:
